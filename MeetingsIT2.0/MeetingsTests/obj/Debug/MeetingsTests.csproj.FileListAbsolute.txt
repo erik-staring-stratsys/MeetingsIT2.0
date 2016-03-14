@@ -1,0 +1,13 @@
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\MeetingsTests.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\MeetingsTests.pdb
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\MeetingsIT2.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\nunit.framework.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\WebDriver.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\WebDriver.Support.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\MeetingsIT2.pdb
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\nunit.framework.xml
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\WebDriver.xml
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\bin\Debug\WebDriver.Support.xml
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\obj\Debug\MeetingsTests.csprojResolveAssemblyReference.cache
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\obj\Debug\MeetingsTests.dll
+C:\GIT\MeetingsIT2.0\MeetingsIT2.0\MeetingsTests\obj\Debug\MeetingsTests.pdb
