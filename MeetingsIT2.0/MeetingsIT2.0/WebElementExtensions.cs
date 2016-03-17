@@ -20,6 +20,11 @@ namespace MeetingsIT2
             return webElement.GetAttribute("title");
         }
 
+        public static string TextOnly(this IWebElement webElement)
+        {
+            return webElement.Text.Replace("\"", "");
+        }
+
         public static void WaitForElementsNotDisplayed(this IWebElement element)
         {
             var count = 0;

@@ -15,5 +15,7 @@ namespace MeetingsTests.Dto
         public string EndTime { get; set; }
         public string Location { get; set; }
         public string Description { get; set; }
+        public string MeetingSeriesId { get; set; }
+        public string IsOrganizer { get; set; }
     }
 }

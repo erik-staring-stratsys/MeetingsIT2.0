@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using MeetingsIT2;
 using MeetingsTests.Dto;
 using NUnit.Framework;
+using NUnit.Framework.Constraints;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.PageObjects;
 
@@ -28,11 +30,14 @@ namespace MeetingsTests.Api
             
             DtoTextarea.SendKeys($"{{'MeetingName': '{meetingName}','Date': '{date}', 'Description': '{description}', 'StartTime': '{startTime}', 'EndTime': '{endTime}', 'Location': '{location}'}}");
 
-            Submit(PostMeetings).Click();
+            _driver.ScrollToElement(Submit(PostMeetings));
+            _driver.Click(Submit(PostMeetings));
             _driver.WaitFor(ResponseBody);
 
             var meetingDto = new MeetingDto();
-            var meetingId = ResponseId(ResponseBody).Text;
+            var meetingId = ResponseId(PostMeetings).Text;
+            var meetingSeriesId = ResponseMeetingSeriesId(PostMeetings).Text;
+            var isOrganizer = ResponseIsOrganizer(PostMeetings).Text;
 
             meetingDto.Id = meetingId;
             meetingDto.Date = date;
@@ -41,11 +46,13 @@ namespace MeetingsTests.Api
             meetingDto.StartTime = startTime;
             meetingDto.EndTime = endTime;
             meetingDto.Location = location;
+            meetingDto.MeetingSeriesId = meetingSeriesId;
+            meetingDto.IsOrganizer = isOrganizer;
 
             return meetingDto;
         }
 
-        public MeetingDto PutMeeting(string meetingId)
+        public MeetingDto PutMeeting(string meetingId, string meetingSeriesId)
         {
             IdParameterInput(PutMeetingSection).SendKeys(meetingId);
 
@@ -55,15 +62,18 @@ namespace MeetingsTests.Api
             var startTime = "15:00:00";
             var endTime = "16:00:00";
             var location = GenerateName("LocationUpdated");
+            var isOrganizer = "true";
 
-            DtoTextarea.SendKeys($"{{'MeetingName': '{meetingName}','Date': '{date}', 'Description': '{description}', 'StartTime': '{startTime}', 'EndTime': '{endTime}', 'Location': '{location}'}}");
+            PutMeetingDtoTextare(PutMeetingSection).SendKeys($"{{'Id': '{meetingId}','MeetingName': '{meetingName}','Date': '{date}', 'Description': '{description}', 'StartTime': '{startTime}', 'EndTime': '{endTime}', 'Location': '{location}', 'MeetingSeriesId': '{meetingSeriesId}', 'IsOrganizer': '{isOrganizer}'}}");
 
-            Submit(PutMeetingSection).Click();
+            _driver.ScrollToElement(Submit(PutMeetingSection));
+            _driver.Click(Submit(PutMeetingSection));
             _driver.WaitFor(ResponseBody);
 
             var updatedMeetingDto = new MeetingDto();
-            var updatedMeetingId = ResponseId(ResponseBodys.Last()).Text;
-
+            var updatedMeetingId = ResponseId(PutMeetingSection).Text;
+            var updatedMeetingSeriesId = ResponseMeetingSeriesId(PutMeetingSection).Text;
+            
             updatedMeetingDto.Id = updatedMeetingId;
             updatedMeetingDto.Date = date;
             updatedMeetingDto.MeetingName = meetingName;
@@ -71,12 +81,17 @@ namespace MeetingsTests.Api
             updatedMeetingDto.StartTime = startTime;
             updatedMeetingDto.EndTime = endTime;
             updatedMeetingDto.Location = location;
+            updatedMeetingDto.MeetingSeriesId = updatedMeetingSeriesId;
+            updatedMeetingDto.IsOrganizer = isOrganizer;
 
             return updatedMeetingDto;
         }
 
         [FindsBy(How = How.Id, Using = "MeetingV2_MeetingV2_GetMeeting")]
         public IWebElement GetMeeting { get; set; }
+
+        [FindsBy(How = How.Id, Using = "MeetingV2_MeetingV2_GetMeetings")]
+        public IWebElement GetMeetings { get; set; }
 
         [FindsBy(How = How.Id, Using = "MeetingV2_MeetingV2_DeleteMeeting")]
         public IWebElement DeleteMeeting { get; set; }
@@ -99,14 +114,28 @@ namespace MeetingsTests.Api
         [FindsBy(How = How.CssSelector, Using = ".endpoint")]
         public IList<IWebElement> Endpoints { get; set; }
 
-        public IWebElement ResponseId(IWebElement responseBody)
+        public IWebElement ResponseId(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).First();
             return element;
         }
-
-        public IWebElement ResponseDate(IWebElement responseBody)
+        public IWebElement ResponseLastId(IWebElement endpoint, string meetingId)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
+            var element = responseBody.FindElement(By.XPath("//*[contains(text(), '"+meetingId+"')]"));
+            return element;
+        }
+        
+        public IWebElement PutMeetingDtoTextare(IWebElement section)
+        {
+            var element = section.FindElements(By.CssSelector(".body-textarea.required")).First();
+            return element;
+        }
+
+        public IWebElement ResponseDate(IWebElement endpoint)
+        {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(2).First();
             return element;
         }
@@ -117,33 +146,51 @@ namespace MeetingsTests.Api
             return element;
         }
 
-        public IWebElement ResponseMeetingName(IWebElement responseBody)
+        public IWebElement ResponseMeetingName(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(1).First();
             return element;
         }
 
-        public IWebElement ResponseMeetingStartTime(IWebElement responseBody)
+        public IWebElement ResponseMeetingStartTime(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(4).First();
             return element;
         }
 
-        public IWebElement ResponseMeetingEndTime(IWebElement responseBody)
+        public IWebElement ResponseMeetingEndTime(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(5).First();
             return element;
         }
 
-        public IWebElement ResponseMeetingDescription(IWebElement responseBody)
+        public IWebElement ResponseMeetingDescription(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(3).First();
             return element;
         }
 
-        public IWebElement ResponseMeetingLocation(IWebElement responseBody)
+        public IWebElement ResponseMeetingLocation(IWebElement endpoint)
         {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
             var element = responseBody.FindElements(By.CssSelector(".value")).Skip(6).First();
+            return element;
+        }
+        public IWebElement ResponseMeetingSeriesId(IWebElement endpoint)
+        {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
+            var element = responseBody.FindElements(By.CssSelector(".value")).Skip(7).First();
+            return element;
+        }
+
+        public IWebElement ResponseIsOrganizer(IWebElement endpoint)
+        {
+            var responseBody = endpoint.FindElement(By.CssSelector(".response_body.json"));
+            var element = responseBody.FindElements(By.CssSelector(".value")).Skip(15).First();
             return element;
         }
 

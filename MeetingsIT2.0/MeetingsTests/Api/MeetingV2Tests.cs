@@ -9,11 +9,30 @@ using NUnit.Framework;
 
 namespace MeetingsTests.Api
 {
+    [Parallelizable(ParallelScope.Fixtures)]
     public class MeetingV2Tests : BaseTest<MeetingV2Page>.ApiMeetingV2BaseTest<MeetingV2Page>
     {
         protected override MeetingV2Page CreatePage()
         {
             return new MeetingV2Page(_driver);
+        }
+
+        [Test]
+        public void GetMeetings()
+        {
+            var meetingDto = _page.PostMeeting();
+
+            _driver.Click(_page.ExpandSection(_page.GetMeetings), _page.Submit(_page.GetMeetings));
+
+            _driver.Click(_page.Submit(_page.GetMeetings), null, "1000");
+
+            var firstMeetingId = _page.ResponseId(_page.GetMeetings).Text;
+            var firstMeetingName = _page.ResponseMeetingName(_page.GetMeetings).TextOnly();
+            Assert.That(firstMeetingId, Is.EqualTo("2214"));
+            Assert.That(firstMeetingName, Is.EqualTo("test"));
+
+            var lastMeetingId = _page.ResponseLastId(_page.GetMeetings, meetingDto.Id).Text;
+            Assert.That(lastMeetingId, Is.EqualTo(meetingDto.Id));
         }
 
         [Test]
@@ -26,13 +45,13 @@ namespace MeetingsTests.Api
             _page.IdParameterInput(_page.GetMeeting).SendKeys(meetingDto.Id);
             _driver.Click(_page.Submit(_page.GetMeeting), null ,"1000");
 
-            var meetingId = _page.ResponseId(_page.ResponseBodys.Last()).Text;
-            var meetingDate = _page.ResponseDate(_page.ResponseBodys.Last()).Text.Replace("\"","");
-            var meetingName = _page.ResponseMeetingName(_page.ResponseBodys.Last()).Text.Replace("\"","");
-            var meetingStartTime = _page.ResponseMeetingStartTime(_page.ResponseBodys.Last()).Text.Replace("\"", ""); 
-            var meetingEndTime = _page.ResponseMeetingEndTime(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingDescription = _page.ResponseMeetingDescription(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingLocation = _page.ResponseMeetingLocation(_page.ResponseBodys.Last()).Text.Replace("\"", "");
+            var meetingId = _page.ResponseId(_page.GetMeeting).Text;
+            var meetingDate = _page.ResponseDate(_page.GetMeeting).TextOnly();
+            var meetingName = _page.ResponseMeetingName(_page.GetMeeting).TextOnly();
+            var meetingStartTime = _page.ResponseMeetingStartTime(_page.GetMeeting).TextOnly(); 
+            var meetingEndTime = _page.ResponseMeetingEndTime(_page.GetMeeting).TextOnly();
+            var meetingDescription = _page.ResponseMeetingDescription(_page.GetMeeting).TextOnly();
+            var meetingLocation = _page.ResponseMeetingLocation(_page.GetMeeting).TextOnly();
 
             Assert.That(meetingId, Is.EqualTo(meetingDto.Id));
             Assert.That(meetingDate, Is.EqualTo(meetingDto.Date));
@@ -69,29 +88,30 @@ namespace MeetingsTests.Api
             _driver.Click(_page.ExpandSection(_page.PutMeetingSection), _page.Submit(_page.PutMeetingSection));
 
             var id = meetingDto.Id;
-            var updatedMeetingDto = _page.PutMeeting(id);
-            Assert.That(meetingDto.Id, Is.EqualTo(updatedMeetingDto.Id));
-
+            var seriesId = meetingDto.MeetingSeriesId;
+            var updatedMeetingDto = _page.PutMeeting(id, seriesId);
+           
             _driver.Click(_page.ExpandSection(_page.GetMeeting), _page.Submit(_page.GetMeeting));
 
+            _driver.ScrollToElement(_page.IdParameterInput(_page.GetMeeting));
             _page.IdParameterInput(_page.GetMeeting).SendKeys(meetingDto.Id);
             _driver.Click(_page.Submit(_page.GetMeeting), null, "1000");
 
-            var meetingId = _page.ResponseId(_page.ResponseBodys.Last()).Text;
-            var meetingDate = _page.ResponseDate(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingName = _page.ResponseMeetingName(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingStartTime = _page.ResponseMeetingStartTime(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingEndTime = _page.ResponseMeetingEndTime(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingDescription = _page.ResponseMeetingDescription(_page.ResponseBodys.Last()).Text.Replace("\"", "");
-            var meetingLocation = _page.ResponseMeetingLocation(_page.ResponseBodys.Last()).Text.Replace("\"", "");
+            var meetingId = _page.ResponseId(_page.GetMeeting).TextOnly();
+            var meetingDate = _page.ResponseDate(_page.GetMeeting).TextOnly();
+            var meetingName = _page.ResponseMeetingName(_page.GetMeeting).TextOnly();
+            var meetingStartTime = _page.ResponseMeetingStartTime(_page.GetMeeting).TextOnly();
+            var meetingEndTime = _page.ResponseMeetingEndTime(_page.GetMeeting).TextOnly();
+            var meetingDescription = _page.ResponseMeetingDescription(_page.GetMeeting).TextOnly();
+            var meetingLocation = _page.ResponseMeetingLocation(_page.GetMeeting).TextOnly();
 
-            Assert.That(meetingId, Is.EqualTo(meetingDto.Id));
-            Assert.That(meetingDate, Is.EqualTo(meetingDto.Date));
-            Assert.That(meetingName, Is.EqualTo(meetingDto.MeetingName));
-            Assert.That(meetingStartTime, Is.EqualTo(meetingDto.StartTime));
-            Assert.That(meetingEndTime, Is.EqualTo(meetingDto.EndTime));
-            Assert.That(meetingDescription, Is.EqualTo(meetingDto.Description));
-            Assert.That(meetingLocation, Is.EqualTo(meetingDto.Location));
+            Assert.That(meetingId, Is.EqualTo(updatedMeetingDto.Id));
+            Assert.That(meetingDate, Is.EqualTo(updatedMeetingDto.Date));
+            Assert.That(meetingName, Is.EqualTo(updatedMeetingDto.MeetingName));
+            Assert.That(meetingStartTime, Is.EqualTo(updatedMeetingDto.StartTime));
+            Assert.That(meetingEndTime, Is.EqualTo(updatedMeetingDto.EndTime));
+            Assert.That(meetingDescription, Is.EqualTo(updatedMeetingDto.Description));
+            Assert.That(meetingLocation, Is.EqualTo(updatedMeetingDto.Location));
         }
     }
 }

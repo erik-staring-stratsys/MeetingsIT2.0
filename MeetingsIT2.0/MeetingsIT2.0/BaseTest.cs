@@ -109,7 +109,23 @@ namespace MeetingsIT2
 
                 _driver.Click(_page.Explore, _page.MeetingV2EndpointList);
 
-                _driver.Click(_page.MeetingV2EndpointList, _page.PostMeetings);
+                _driver.Click(_page.UserV2EndpointList, _page.GetCurrentUser);
+
+                _driver.Click(_page.ExpandGetCurrentUser(_page.GetCurrentUser), _page.Authenticate(_page.GetCurrentUser));
+
+                _driver.Click(_page.Authenticate(_page.GetCurrentUser), _page.AuthenticateDialog);
+
+                _driver.Click(_page.UsersScope);
+
+                _driver.Click(_page.AuthorizeButton, null, "1000");
+                _driver.SwitchTo().Window(_driver.WindowHandles.Last());
+                _driver.WaitFor(_page.UserName);
+
+                _page.UserName.SendKeys("stratsysseleniumtests@gmail.com");
+                _page.Password.SendKeys("testa");
+                _driver.Click(_page.LoginButton, null, "1000");
+
+                _driver.SwitchTo().Window(_driver.WindowHandles.First());
             }
         }
     }

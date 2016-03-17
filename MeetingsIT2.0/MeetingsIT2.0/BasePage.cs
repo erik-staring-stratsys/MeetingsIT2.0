@@ -28,6 +28,9 @@ namespace MeetingsIT2
         [FindsBy(How = How.Id, Using = "scope_0")]
         public IWebElement MeetingsScope { get; set; }
 
+        [FindsBy(How = How.Id, Using = "scope_2")]
+        public IWebElement UsersScope { get; set; }
+
         [FindsBy(How = How.Id, Using = "txtUserName")]
         public IWebElement UserName { get; set; }
 
@@ -36,6 +39,9 @@ namespace MeetingsIT2
 
         [FindsBy(How = How.CssSelector, Using = "a[data-id='MeetingV2']")]
         public IWebElement MeetingV2EndpointList { get; set; }
+
+        [FindsBy(How = How.CssSelector, Using = "a[data-id='UserV2']")]
+        public IWebElement UserV2EndpointList { get; set; }
 
         [FindsBy(How = How.CssSelector, Using = ".loginButton")]
         public IWebElement LoginButton { get; set; }
@@ -48,10 +54,18 @@ namespace MeetingsIT2
 
         [FindsBy(How = How.Id, Using = "MeetingV2_MeetingV2_PostMeeting")]
         public IWebElement PostMeetings { get; set; }
+
+        [FindsBy(How = How.Id, Using = "UserV2_UserV2_GetCurrentUser")]
+        public IWebElement GetCurrentUser { get; set; }
         
         public IWebElement ExpandPostMeetings(IWebElement postMeetings)
         {
             var element = postMeetings.FindElement(By.CssSelector(".toggleOperation"));
+            return element;
+        }
+        public IWebElement ExpandGetCurrentUser(IWebElement getCurrentUser)
+        {
+            var element = getCurrentUser.FindElement(By.CssSelector(".toggleOperation"));
             return element;
         }
         
