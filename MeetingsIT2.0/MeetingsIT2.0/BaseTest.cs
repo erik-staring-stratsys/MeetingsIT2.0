@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,45 +57,37 @@ namespace MeetingsIT2
             _driver = new RemoteWebDriver(remoteAddress, desiredCapabilities);
 #endif
         }
-
+        
         [TestFixture]
-        public abstract class ApiBaseTest<T> : BaseTest<T> where T : BasePage
+        public abstract class ApiMeetingV2BaseTest<T> : BaseTest<T> where T : BasePage
         {
             protected override void PostStart()
             {
                 _driver.Manage().Window.Maximize();
                 _driver.WaitFor(_page.Explore);
 
-                _page.ApiSelectorOptions.Skip(1).First().Click();
-
-                _page.Explore.Click();
-                _driver.WaitFor(_page.MeetingV2EndpointList);
-
-                _page.MeetingV2EndpointList.Click();
-                _driver.WaitFor(_page.PostMeetings);
-
-                _page.ExpandPostMeetings(_page.PostMeetings).Click();
-                _driver.WaitFor(_page.Authenticate(_page.PostMeetings));
-
-                _page.Authenticate(_page.PostMeetings).Click();
-                _driver.WaitFor(_page.AuthenticateDialog);
-
-                _page.MeetingsScope.Click();
-
-                _page.AuthorizeButton.Click();
-                Thread.Sleep(1000);
+                _driver.Click(_page.ApiSelectorOptions.Skip(1).First());
+                
+                _driver.Click(_page.Explore, _page.MeetingV2EndpointList);
+                
+                _driver.Click(_page.MeetingV2EndpointList, _page.PostMeetings);
+                
+                _driver.Click(_page.ExpandPostMeetings(_page.PostMeetings), _page.Authenticate(_page.PostMeetings));
+                
+                _driver.Click(_page.Authenticate(_page.PostMeetings), _page.AuthenticateDialog);
+                
+                _driver.Click(_page.MeetingsScope);
+                
+                _driver.Click(_page.AuthorizeButton, null, "1000");
+                
                 _driver.SwitchTo().Window(_driver.WindowHandles.Last());
                 _driver.WaitFor(_page.UserName);
 
                 _page.UserName.SendKeys("stratsysseleniumtests@gmail.com");
                 _page.Password.SendKeys("testa");
-                _page.LoginButton.Click();
-                Thread.Sleep(1000);
-
+                _driver.Click(_page.LoginButton, null, "1000");
+                
                 _driver.SwitchTo().Window(_driver.WindowHandles.First());
-
-                _page.Submit(_page.PostMeetings).Click();
-
             }
         }
     }

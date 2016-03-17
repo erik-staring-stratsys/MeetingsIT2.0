@@ -16,7 +16,12 @@ namespace MeetingsIT2
         {
             _driver = driver;
         }
-        
+
+        public string GenerateName(string prefix)
+        {
+            return $"{prefix}.{DateTime.Now.ToString("yyyyMMdd.HHmmssff")}";
+        }
+
         [FindsBy(How = How.Id, Using = "explore")]
         public IWebElement Explore { get; set; }
 
@@ -43,13 +48,13 @@ namespace MeetingsIT2
 
         [FindsBy(How = How.Id, Using = "MeetingV2_MeetingV2_PostMeeting")]
         public IWebElement PostMeetings { get; set; }
-
+        
         public IWebElement ExpandPostMeetings(IWebElement postMeetings)
         {
             var element = postMeetings.FindElement(By.CssSelector(".toggleOperation"));
             return element;
         }
-
+        
         public IWebElement Authenticate(IWebElement postMeetings)
         {
             var element = postMeetings.FindElement(By.CssSelector(".api-ic.ic-off"));
@@ -61,7 +66,7 @@ namespace MeetingsIT2
             var element = postMeetings.FindElement(By.CssSelector(".submit"));
             return element;
         }
-
+        
         [FindsBy(How = How.CssSelector, Using = "option")]
         public IList<IWebElement> ApiSelectorOptions { get; set; }
 

@@ -119,14 +119,19 @@ namespace MeetingsIT2
             Assert.AreEqual("", javaScriptErrorsAsString, "Found JavaScript errors on page: " + javaScriptErrorsAsString);
         }
 
-        public static void Click(this IWebDriver driver, IWebElement element, IWebElement elementToWaitFor = null)
+        public static void Click(this IWebDriver driver, IWebElement element, IWebElement elementToWaitFor = null, string wait = null)
         {
             element.Click();
-            driver.JsErrorCheck();
+            //driver.JsErrorCheck();
             if (elementToWaitFor != null)
             {
                 driver.WaitFor(elementToWaitFor);
-                driver.JsErrorCheck();
+                //driver.JsErrorCheck();
+            }
+            if (wait != null)
+            {
+                var time = Convert.ToInt32(wait);
+                Thread.Sleep(time);
             }
         }
     }

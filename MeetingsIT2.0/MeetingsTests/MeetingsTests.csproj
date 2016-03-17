@@ -60,6 +60,7 @@
     <Compile Include="Api\MeetingV2Tests.cs" />
     <Compile Include="Api\MeetingV2Page.cs" />
     <Compile Include="Configs\Config.cs" />
+    <Compile Include="Dto\MeetingDto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
